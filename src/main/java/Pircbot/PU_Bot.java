@@ -15,6 +15,8 @@ import com.google.cloud.translate.Translation;
 import com.google.cloud.translate.*;
 //Language Code Support
 import com.neovisionaries.i18n.LanguageCode;
+import main.java.Pircbot.*;
+
 
 
 
@@ -50,24 +52,24 @@ public class PU_Bot extends PircBot {
             String time = new java.util.Date().toString();
             sendMessage(channel, sender + ": The time is now " + time);
         }
-        else if (message.contains("|translate")){
+        else if (message.toLowerCase().contains("|translate")){
           try{
             String[] splitUp = message.split(":");
             String sentence = splitUp[1];
-            System.out.println("Sentence: "+sentence);
+            //System.out.println("Sentence: "+sentence);
             String toLang = splitUp[0].split(" ")[1];
-            System.out.println("toLang: "+toLang);
+            //System.out.println("toLang: "+toLang);
             Pattern name = Pattern.compile(toLang,Pattern.CASE_INSENSITIVE);
             List<LanguageCode> lang = LanguageCode.findByName(name);
             Translate translate = TranslateOptions.getDefaultInstance().getService();
             Detection detection = translate.detect(sentence);
             String target = String.format("%s",lang.get(0));
-            System.out.println("Target: " + target);
+            //System.out.println("Target: " + target);
             Translation translation = translate.translate(sentence,
               TranslateOption.sourceLanguage(detection.getLanguage()),
               TranslateOption.targetLanguage(target));
             String translated = translation.getTranslatedText();
-            System.out.println("Translated Text: "+translated);
+            //System.out.println("Translated Text: "+translated);
             sendMessage(channel,"Translated Text: "+translated);
 
           }
@@ -76,15 +78,15 @@ public class PU_Bot extends PircBot {
             sendMessage(channel,"|translate {desired language}: {string}\n");
           }
         }
-        else if (message.contains("|detect")){
+        else if (message.toLowerCase().contains("|detect")){
           try{
             String[] splitUp = message.split(":");
             String sentence = splitUp[1];
-            System.out.println("Sentence: "+sentence);
+            //System.out.println("Sentence: "+sentence);
             Translate translate = TranslateOptions.getDefaultInstance().getService();
             Detection detection = translate.detect(sentence);
             LanguageCode detected = LanguageCode.getByCodeIgnoreCase(detection.getLanguage());
-            System.out.println("Detected Language: "+detected.getName());
+            //System.out.println("Detected Language: "+detected.getName());
             sendMessage(channel,"Detected Language: "+detected.getName());
           }
           catch (Exception e){
@@ -92,12 +94,12 @@ public class PU_Bot extends PircBot {
             sendMessage(channel,"|detect : {string you want to know the language of}\n");
           }
         }
-        else if (message.contains("|wiki")){
+        else if (message.toLowerCase().contains("|wiki")){
           try{
             String[] splitUp = message.split(":");
             String topic = splitUp[1].trim();
             topic = topic.replaceAll(" ", "_");
-            System.out.println("Topic: "+topic);
+            //System.out.println("Topic: "+topic);
             String searchURL = "https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search="+topic;
             JSONArray json = readJsonFromUrl(searchURL);
             JSONArray summary = json.getJSONArray(2);
@@ -112,25 +114,54 @@ public class PU_Bot extends PircBot {
             }
             String finSum = sumStrings[0];
             String finLink = linkStrings[0];
-            System.out.println("Summary: "+summary+"\n");
-            System.out.println("Link: "+link+"\n" );
-            if (finSum != null && !finSum.isEmpty())
+            //System.out.println("Summary: "+summary+"\n");
+            //System.out.println("Link: "+link+"\n" );
+            if (finSum != null && !finSum.isEmpty()){
               sendMessage(channel,finSum+"\n");
-            sendMessage(channel,"Link to full article: "+finLink+"\n");
+            }
+            sendMessage(channel,"Link to full article: "+Colors.BLUE+finLink+"\n");
           }
           catch (Exception e){
             System.out.println(e);
             sendMessage(channel,"|wiki : {topic to search}\n");
           }
         }
-        else if (message.equalsIgnoreCase("|help")){
+        else if (message.toLowerCase().contains("|news")){
+          try{
+            //String feedUrl = "https://news.google.com/_/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en";
+            String feedUrl = "http://feeds.reuters.com/reuters/topNews";
+            RSSFeedParser parser = new RSSFeedParser(feedUrl);
+            Feed feed = parser.readFeed();
+            String headlines[];
+            headlines = new String[5];
+            String links[];
+            links = new String[5];
+            List<FeedMessage> wholeFeed = feed.getMessages();
+            for (int i = 0; i < 5; i++){
+              FeedMessage current = wholeFeed.get(i);
+              String headline = current.getTitle();
+              String lin = current.getLink();
+              headlines[i] =headline;
+              links[i] = lin;
+            }
+            for (int i = 0; i < headlines.length; i++){
+              sendMessage(channel, Colors.BOLD + (i+1) + ". " + Colors.NORMAL +  headlines[i] + " (Link: " + Colors.BLUE + links[i] + Colors.NORMAL+")");
+            }
+          }
+          catch (Exception e){
+            System.out.println(e);
+            sendMessage(channel,"|news -- lists top 5 current stories\n");
+          }
+        }
+        else if (message.toLowerCase().equalsIgnoreCase("|help")){
           String commands[];
-          commands = new String[5];
+          commands = new String[6];
           commands[0] = "PUBot Commands:\n";
           commands[1] = "|time -- Displays current date and time\n";
           commands[2] = "|translate {desired language}: {string}\n";
           commands[3] = "|detect : {string you want to know the language of}\n";
           commands[4] = "|wiki : {topic to search}\n";
+          commands[5] = "|news -- lists top 5 current stories\n";
           for (int i = 0; i <commands.length;i++){
             sendMessage(channel,commands[i]);
           }
@@ -156,12 +187,28 @@ public class PU_Bot extends PircBot {
       }
     }
 
+    //Called when we connect to a new channel
     @Override
     public void onUserList(String channel, User[] users){
-      for (int i = 0; i < users.length; i++){
-        User user = users[i];
-        String nick = user.getNick();
-        System.out.println(nick);
+      sendMessage(channel, "Hi all, I am PU_Bot");
+      String commands[];
+      commands = new String[6];
+      commands[0] = "PUBot Commands:\n";
+      commands[1] = "|time -- Displays current date and time\n";
+      commands[2] = "|translate {desired language}: {string}\n";
+      commands[3] = "|detect : {string you want to know the language of}\n";
+      commands[4] = "|wiki : {topic to search}\n";
+      commands[5] = "|news -- lists top 5 current stories\n";
+      for (int i = 0; i <commands.length;i++){
+        sendMessage(channel,commands[i]);
+      }
+    }
+
+    //Called when new user joins the channel
+    @Override
+    public void onJoin(String channel, String sender, String login, String hostname){
+      if (sender != getNick()){
+        sendMessage(channel,"Welcome, "+sender+"! Type '|help' if you want to know what I can do");
       }
     }
 

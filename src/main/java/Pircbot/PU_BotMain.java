@@ -15,6 +15,7 @@ public class PU_BotMain {
           bot.connect("irc.freenode.net");
         }
         catch(Exception e){
+          bot.disconnect();
           System.out.println("Can't connect: " + e);
           return;
         }
