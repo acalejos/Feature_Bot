@@ -41,7 +41,7 @@ public class PU_Bot extends PircBot {
     }
 
     public PU_Bot() {
-        this.setName("PUB_Bot_3");
+        this.setName("PUB_Bot");
 
     }
 
