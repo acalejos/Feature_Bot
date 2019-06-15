@@ -33,6 +33,6 @@
 
 ## Demo
 
-![Bot Demo](images/Demo_results.jpg)
+![](images/Demo_results.JPG)
 
 [Pircbot Java Framework]: http://www.jibble.org/pircbot.php
