@@ -100,7 +100,7 @@ public class PU_Bot extends PircBot {
             String topic = splitUp[1].trim();
             topic = topic.replaceAll(" ", "_");
             //System.out.println("Topic: "+topic);
-            String searchURL = "https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search="+topic;
+            String searchURL = "https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&format=json&search="+topic;
             JSONArray json = readJsonFromUrl(searchURL);
             JSONArray summary = json.getJSONArray(2);
             JSONArray link = json.getJSONArray(3);
