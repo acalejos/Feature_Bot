@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/acalejos/Feature_Bot.svg?branch=master)](https://travis-ci.org/acalejos/Feature_Bot)
+
 # IRC Chat Bot Made Using the [Pircbot Java Framework]
 
 ## How to Build:
