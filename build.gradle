@@ -6,11 +6,6 @@
  * user guide available at https://docs.gradle.org/5.0/userguide/tutorial_java_projects.html
  */
  
-buildScan {
-    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
-}
-
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
@@ -41,6 +36,11 @@ dependencies {
     compile 'com.google.cloud:google-cloud-translate:1.53.0'
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+}
+
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 // Define the main class for the application
